@@ -1,72 +1,121 @@
 
-class KnightTour:
-    
-    def __init__(self, bd_size, s_pos):                       ## 构造函数 
-        self.BDsize = bd_size                                         ## 表示棋盘的边长
-        self.board = [[0]* bd_size for _ in range(bd_size )]       ## 表示棋盘，0代表未踩过，1代表踩过
-        #self.pathboard = [[0]* bd_size for _ in range(bd_size)]   ## 一个用来显示路径的棋盘，每个位置上的值表示它在路径上的顺序
-        self.start_pos = s_pos                                  ## 表示起始点的坐标，坐标从1开始
-        self.eight_dire = [[2,1],[2,-1],[-2,1],[-2,-1],         ## 定义8个方向的坐标变化
-                        [1,2],[1,-2],[-1,2],[-1,-2]]
+'''
+CS5800 Final project
+Summer 2022
+Ce(Lydia) Zhao,
+Yingying Feng,
+Zhuohang(Skylar) Li,
+Zheng Gong
+Knight Tour 
+This a project given a N*N board with the knight placed on a given starting position,
+and the knight should move according to the rules of must visit each square exactly once.
+If there exist a route that satify the rule, we print the order of each cell in which they
+are visited.
+'''
 
-    # def FindMoves(self, cur_pos)                            ## 找出当前位置的下一步可能方向
-    # def searchNext(self, cur_pos,moveCount)                       ## 从当前位置开始，递归地找出路径
-    # def tour(self)                                          ## 调用SearchNext计算出起始位置路径，并打印出来
-    # def printBD(self, board)                                   ## 美观地打印出棋盘
+class KnightTour:     
+    '''
+    Class KnightTour
+    Attributes: BDsize, board, start_pos, directions
+    Methods: findMoves, searchNext, tour, printPath 
+    
+    '''
+    def __init__(self, size, s_pos):  
+        '''
+        Constructor -- create new instances of board.
+        Parameters: 
+        self -- the current object.
+        size -- an integer, the size of the board.
+        board -- a 2-d array represents the states of the board, 0 means not visited, other 
+                 positive integers represent the visiting order.
+        start_pos -- an array of two elements representing the starting point of the knight.
+        directions -- a 2-D array represents the eight directions the kight can move. 
+        '''                       
+        self.BDsize = size                                  
+        self.board = [[0]* size for _ in range(size )]    
+        self.start_pos = s_pos                                  
+        self.directions = [[2,1],[2,-1],[-2,1],[-2,-1],        
+                        [1,2],[1,-2],[-1,2],[-1,-2]]
     
     
-    def FindMoves(self, cur_pos):
-        ## 所有八个方向
-        moves = [[x + y for x,y in zip(cur_pos,dire)] for dire in self.eight_dire]
-        ## 八个方向中下一步可以走的方向
-        valid_moves = [move for move in moves if 0<=move[0]<self.BDsize
-                        and 0<=move[1]<self.BDsize
-                        and self.board[move[0]][move[1]] == 0]
+    def findMoves(self, cur_pos):
+        '''
+        Method -- findMoves
+        Parameters:
+            self -- the current object.
+            cur_pos -- the current position of the knight.
+        Purpose: search the valid moves of the knight according to the current position.
+        Return: a 2-d array including all possible valid moves of the knight.
+        '''
+        moves = [[x + y for x,y in zip(cur_pos,direction)] for direction in self.directions]  #get the positions after possible moves 
+        valid_moves = [move for move in moves if 0<=move[0]<self.BDsize                       #check if the move is inside the boarder
+                        and 0<=move[1]<self.BDsize                 
+                        and self.board[move[0]][move[1]] == 0]                                #check if the move is landing on an empty square.
         return valid_moves
     
-    def searchNext(self, cur_pos, moveCount):
-        ## 在表示路径的棋盘上标上当前是第几步
+    def searchNext(self, cur_pos, moveCount):  
+        '''
+        Method -- searchNext
+        Parameters:
+            self -- the current object.
+            cur_pos -- the current position of the knight.
+            moveCount -- the current steps the knight has taken.
+        Purpose: search the next step recursively until find a solution 
+        Return: return true if there exist a solution, return false if no solution
+        ''' 
+        #add one of the next moves to solution the route
         self.board[cur_pos[0]][cur_pos[1]] = moveCount
-        #print(moveCount)   
+        #if find a complete route return true     
         if moveCount >= self.BDsize* self.BDsize:
             return True
-  
-  
-        moves = self.FindMoves(cur_pos)
+            
+        moves = self.findMoves(cur_pos)
         if len(moves) == 0 :  
             return False
     
-        for move in moves:                
-            #self.board[move[0]][move[1]] = moveCount
-            #print(self.board)
-            #self.pathboard[move[0]][move[1]] = moveCount
-            if self.searchNext(move, moveCount + 1):    ## 递归调用
+        for move in moves:
+            #recursively check if the current move leads to a legal move.                
+            if self.searchNext(move, moveCount + 1):    
                 return True
+            #if the move above doesn't lead to a leagal move then remove this move
+            #from our route and try other alternative moves.
             else:
                 self.board[move[0]][move[1]] = 0
    
 
     def tour(self):
+        '''
+        Method -- tour
+        Parameters:
+            self -- the current object.
+        Purpose: starting the process of tour from given point.
+        Return: return ture if the tour is finished; return false if no complete tour.
+        '''
         cur_pos = self.start_pos
-        self.board[cur_pos[0]][cur_pos[1]] = 1
-        return self.searchNext(cur_pos, 1)
-
-    def printBD(self, board):
-        print("-------------------------")
-        for row in board:
+        self.board[cur_pos[0]][cur_pos[1]] = 1                #number the starting point to step 1 in the route
+        return self.searchNext(cur_pos, 1)                    #start to search for the next step  
+        
+    def printPath(self):
+        '''
+        Method -- printPath
+        Parameters:
+            self -- the current object.
+        Purpose: print the complete path.
+        Return: none
+        '''
+        print("---------------------------------------")
+        for row in self.board:
             for column in row:
                 print(column, end='\t')
             print("")
-        print("-------------------------")
+        print("---------------------------------------")
+
+def main():    
+    KT = KnightTour(8, [0,0])      
+    if KT.tour(): 
+        KT.printPath()
+    else: 
+        print("No route")
         
-    def printPath(self):
-        self.printBD(self.board)    
-
-
-
-    
-KT = KnightTour(5, [3,0])       ## 建立一个N*N的棋盘，出发点设置为(0,0)
-if KT.tour(): 
-    KT.printPath()
-else: 
-    print("No route")
+if __name__ == "__main__":
+    main()
