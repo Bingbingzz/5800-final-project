@@ -27,7 +27,7 @@ class KnightTour:
                         [1,2],[1,-2],[-1,2],[-1,-2]]
 
     
-    def FindMoves(self, cur_pos):
+    def findMoves(self, cur_pos):
         '''
         Method -- findMoves
         Parameters:
@@ -83,7 +83,7 @@ class KnightTour:
         Purpose: count the number of valid moves from the given position.
         Return: an integer indicates the number of valid moves.
         '''
-        valid_moves = self.FindMoves(cur_pos)
+        valid_moves = self.findMoves(cur_pos)
         return len(valid_moves)
     
     def countDegree(self, cur_pos):
@@ -97,7 +97,7 @@ class KnightTour:
         Return: a 3-D array like [[2, [2,3]], [3, [1,4]]], for each element, the first item 
                 indicates the number of valid moves corresponding to the position given by the second item.
         '''
-        valid_moves = self.FindMoves(cur_pos)
+        valid_moves = self.findMoves(cur_pos)
         return [[self.countNext(move),move] for move in valid_moves]
 
     def searchNext(self, cur_pos, moveCount):
@@ -111,6 +111,7 @@ class KnightTour:
                   multiple valid moves, choose the move with minimum degree(accessibility).
         Return: return true if there exist a solution, return false if no solution
         '''
+        #add one of the next moves to the route
         self.board[cur_pos[0]][cur_pos[1]] = moveCount   
         if moveCount >= self.BDsize* self.BDsize:
             return True
@@ -133,7 +134,8 @@ class KnightTour:
                 else :
                     self.board[cur_pos[0]][cur_pos[1]] = 0
 def main():
-    KT = KnightTour(8, [0,0])       
+    BDsize = int(input("Please enter a board size: "))
+    KT = KnightTour(BDsize, [0,0])       
     if KT.tour():                  
         KT.printPath()     
     else:
