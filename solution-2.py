@@ -122,7 +122,7 @@ class KnightTour:
             moves.sort()
             #This statement is to determing if we arrive at a dead point "D" where one of its next
             #move "M" has 0 valid next move. It means that to arrive point "M" we must go through
-            #point "D". If "D" is not the next to last, we could never arrive "D".
+            #point "D". If "D" is not the next to last move, we could never find a path going through "M".
             if moves[0][0] == 0 and moveCount!= self.BDsize*self.BDsize -1:
                 return False
             for move in moves:
@@ -134,13 +134,30 @@ class KnightTour:
                 else :
                     self.board[cur_pos[0]][cur_pos[1]] = 0
 def main():
-    BDsize = int(input("Please enter a board size: "))
-    KT = KnightTour(BDsize, [0,0])       
+    while True:
+        try:
+            BDsize = int(input("Please enter a board size less than 32: "))
+            r = int(input("Please enter a row number of the start point: "))
+            c = int(input("Please enter a column number of the start point: "))   
+            if r < 0 or r > BDsize or c < 0 or c > BDsize:     
+                print("Invalid input")   
+                continue
+            else:
+                startPoint = [r, c]
+                break 
+            
+        except ValueError:
+            print("Invalid input")              
+                
+    KT = KnightTour(BDsize, startPoint)       
     if KT.tour():                  
-        KT.printPath()     
+        KT.printPath()   
     else:
-        print("No route exists!")
-
+        print("No route exists!\n")
+    
+    
+                
         
+    
 if __name__ == "__main__":
     main()
